@@ -19,3 +19,11 @@ node process-data-lexique.org.js
 ```
 
 will output 2 json files in data-lexique-org: female.json and male.json. We just selected first names which are french and (spanish or english).
+
+## Data from dataaddict.fr/prenoms
+
+``` javascript
+node extract-first-names-from-dataaddict.js
+```
+
+will output 2 json files in data-from-dataaddict.fr: female.json and male.json.

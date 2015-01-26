@@ -1,0 +1,22 @@
+{
+  "name": "firstname-researcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://vogloblinsky@github.com/vogloblinsky/firstname-researcher.git"
+  },
+  "author": "Vincent Ogloblinsky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vogloblinsky/firstname-researcher/issues"
+  },
+  "homepage": "https://github.com/vogloblinsky/firstname-researcher",
+  "dependencies": {
+    "lodash": "^3.0.0"
+  }
+}

@@ -1,30 +1,142 @@
-var phantom  = require('phantom'),
-    fs       = require('fs'),
-    _baseUrlPart1 = 'http://www.prenoms.com/prenom/',
-    _baseUrlPart2 = '-50ans.html',
+var phantom             = require('phantom'),
+    fs                  = require('fs'),
+    Q                   = require('q'),
+    moment              = require('moment'),
+    _sourceDataAddict   = './data-from-dataaddict-fr/',
+    _outputFirstNamesFemaleFilename = _sourceDataAddict + 'female-with-averageAge.txt',
+    _baseUrlPart1       = 'http://www.prenoms.com/prenom/',
+    _baseUrlPart2       = '-50ans.html',
+
+    _processedFirstNamesFemales = [],
+    _maxFemaleAverageAge = 0,
+    _minFemaleAverageAge = 0,
     
-    _timeOut = 3000;
+    _timeOut = 100,
+    _startTime = 0;
 
-var _baseUrl = _baseUrlPart1 + 'anna' + _baseUrlPart2;
+var sansAccent = function(input) {
+    var accent = [
+        /[\300-\306]/g, /[\340-\346]/g,
+        /[\310-\313]/g, /[\350-\353]/g,
+        /[\314-\317]/g, /[\354-\357]/g,
+        /[\322-\330]/g, /[\362-\370]/g,
+        /[\331-\334]/g, /[\371-\374]/g,
+        /[\321]/g, /[\361]/g,
+        /[\307]/g, /[\347]/g,
+    ];
+    var noaccent = ['A','a','E','e','I','i','O','o','U','u','N','n','C','c'];
+     
+    var str = input;
+    for(var i = 0; i < accent.length; i++){
+        str = str.replace(accent[i], noaccent[i]);
+    }
+     
+    return str;
+};
 
-phantom.create(function(ph) {
-    return ph.createPage(function(page) {
-        return page.open(_baseUrl, function(status) {
+var crawlData = function(firstName) {
+    var _baseUrl = _baseUrlPart1 + sansAccent(firstName) + _baseUrlPart2,
+        deferred = Q.defer();
+    
+    phantom.create(function(ph) {
+        return ph.createPage(function(page) {
+            return page.open(_baseUrl, function(status) {
 
-            console.log('Page loaded');
+                console.log('Page loaded: ', status);
 
-            setTimeout(function() {
-                return page.evaluate(function() {
-
-                    var average = parseInt($($('.chiffres')[1]).find('p').html().split('</strong>')[3].replace(' ','').replace(' ans.',''));
-
-                    return average;
-                }, function(result) {
-                    console.log(result);
-
-                    ph.exit();
-                });
-            }, _timeOut);
+                if(status === 'success') {
+                    //Wait ajax call
+                    setTimeout(function() {
+                        return page.evaluate(function() {
+                            var average = parseInt($($('.chiffres')[1]).find('p').html().split('</strong>')[3].replace(' ','').replace(' ans.',''));
+                            return average;
+                        }, function(result) {
+                            deferred.resolve(result);
+                            ph.exit();
+                        });
+                    }, _timeOut);
+                } else {
+                    deferred.reject();
+                }
+            });
         });
     });
+
+    return deferred.promise;
+};
+
+var jsonToTxt = function(_array) {
+
+    var _str = '',
+        i = 0,
+        len = _array.length;
+
+    for(i; i<len; i++) {
+        _str += _array[i]['firstName'] + ' ' + _array[i]['averageAge'] + '\r\n';
+    }
+
+    return _str;
+
+};
+
+fs.readFile(_sourceDataAddict + 'female.json', 'utf8', function(err, data) {
+    if (err) {
+        console.log('Error: ' + err);
+        return;
+    }
+
+    data = JSON.parse(data);
+
+    var i = 0,
+        len = 25,
+
+    injectLoop = function() {
+
+        console.log('i: ' + i + ' | ' + data[i]);
+
+        if(i < len) {
+            crawlData(data[i]).then(function(averageAge) {
+                console.log(data[i], averageAge);
+                console.log('');
+                _processedFirstNamesFemales.push({
+                    firstName: data[i],
+                    averageAge: averageAge
+                });
+
+                _minFemaleAverageAge = averageAge;
+
+                if(averageAge > _maxFemaleAverageAge) {
+                    _maxFemaleAverageAge = averageAge;
+                }
+                if(averageAge < _minFemaleAverageAge) {
+                    _minFemaleAverageAge = averageAge;
+                }
+
+                i++;
+                injectLoop();
+            });
+        } else {
+            
+            var _result = jsonToTxt(_processedFirstNamesFemales),
+                _endTime = moment();
+
+            console.log('Processing time: ' + moment(_endTime.diff(_startTime)).format('mm:ss'));
+
+            console.log('_minFemaleAverageAge: ' + _minFemaleAverageAge + ' _maxFemaleAverageAge: ' + _maxFemaleAverageAge);
+            
+            fs.writeFile(_outputFirstNamesFemaleFilename, _result, function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Data saved to " + _outputFirstNamesFemaleFilename);
+                }
+            });
+        }
+        
+    };
+
+    _startTime = moment();
+
+    injectLoop();
+
 });

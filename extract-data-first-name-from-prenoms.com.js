@@ -3,15 +3,21 @@ var phantom             = require('phantom'),
     Q                   = require('q'),
     moment              = require('moment'),
     _sourceDataAddict   = './data-from-dataaddict-fr/',
-    _outputFirstNamesFemaleFilename = _sourceDataAddict + 'female-with-averageAge.txt',
+
+    _outputFirstNamesFemaleFilenameJson = _sourceDataAddict + 'female-with-averageAge.json',
+
+    _outputFirstNamesMaleFilenameJson = _sourceDataAddict + 'male-with-averageAge.json',
+    
     _baseUrlPart1       = 'http://www.prenoms.com/prenom/',
     _baseUrlPart2       = '-50ans.html',
 
     _processedFirstNamesFemales = [],
+    _processedFirstNamesMales = [],
+
     _maxFemaleAverageAge = 0,
     _minFemaleAverageAge = 0,
     
-    _timeOut = 100,
+    _timeOut = 500,
     _startTime = 0;
 
 var sansAccent = function(input) {
@@ -60,6 +66,8 @@ var crawlData = function(firstName) {
                 }
             });
         });
+    }, {
+        'load-images': false
     });
 
     return deferred.promise;
@@ -79,7 +87,7 @@ var jsonToTxt = function(_array) {
 
 };
 
-fs.readFile(_sourceDataAddict + 'female.json', 'utf8', function(err, data) {
+fs.readFile(_sourceDataAddict + 'male.json', 'utf8', function(err, data) {
     if (err) {
         console.log('Error: ' + err);
         return;
@@ -87,18 +95,21 @@ fs.readFile(_sourceDataAddict + 'female.json', 'utf8', function(err, data) {
 
     data = JSON.parse(data);
 
+    console.log('Length: ' + data.length);
+
     var i = 0,
-        len = 25,
+        len = data.length,
 
     injectLoop = function() {
 
         console.log('i: ' + i + ' | ' + data[i]);
+        console.log('');
 
         if(i < len) {
             crawlData(data[i]).then(function(averageAge) {
                 console.log(data[i], averageAge);
                 console.log('');
-                _processedFirstNamesFemales.push({
+                _processedFirstNamesMales.push({
                     firstName: data[i],
                     averageAge: averageAge
                 });
@@ -112,25 +123,26 @@ fs.readFile(_sourceDataAddict + 'female.json', 'utf8', function(err, data) {
                     _minFemaleAverageAge = averageAge;
                 }
 
-                i++;
-                injectLoop();
+                fs.writeFile(_outputFirstNamesMaleFilenameJson, JSON.stringify(_processedFirstNamesMales), function(err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("Data saved to " + _outputFirstNamesMaleFilenameJson);
+                        i++;
+                        injectLoop();
+                    }
+                });
+
+                
             });
         } else {
             
-            var _result = jsonToTxt(_processedFirstNamesFemales),
-                _endTime = moment();
+            var _endTime = moment();
 
-            console.log('Processing time: ' + moment(_endTime.diff(_startTime)).format('mm:ss'));
+            console.log('Processing time: ' + moment(_endTime.diff(_startTime)).format('hh:mm:ss'));
 
             console.log('_minFemaleAverageAge: ' + _minFemaleAverageAge + ' _maxFemaleAverageAge: ' + _maxFemaleAverageAge);
             
-            fs.writeFile(_outputFirstNamesFemaleFilename, _result, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Data saved to " + _outputFirstNamesFemaleFilename);
-                }
-            });
         }
         
     };

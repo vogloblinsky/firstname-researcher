@@ -27,3 +27,19 @@ node extract-first-names-from-dataaddict.js
 ```
 
 will output 2 json files in data-from-dataaddict.fr: female.json and male.json.
+
+## Process data with prenoms.com
+
+Extract average age
+
+``` javascript
+node extract-data-first-name-from-prenoms.com.js
+```
+
+Female :
+- 709 first names
+- between 36 and 80 years
+
+Male : 
+- 581 first names
+- between X and X years

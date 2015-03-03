@@ -28,13 +28,23 @@ node extract-first-names-from-dataaddict.js
 
 will output 2 json files in data-from-dataaddict.fr folder: female.json and male.json.
 
-## 3. Process data from dataaddict with [prenoms.com](http://prenoms.com)
+## 3. Extract data from [prenoms.com](http://prenoms.com) with dataaddict data
+
+``` javascript
+node extract-data-first-name-from-prenoms.com.js
+```
+
+will output 2 json files in data-from-dataaddict.fr folder: female-with-averageAge.json and male-with-averageAge.json.
+
+## 4. Process data from [prenoms.com](http://prenoms.com)
 
 Extract average age
 
 ``` javascript
 node extract-data-first-name-from-prenoms.com.js
 ```
+
+and output txt files in data-from-dataaddict.fr folder.
 
 and output txt files in data-from-dataaddict.fr folder.
 

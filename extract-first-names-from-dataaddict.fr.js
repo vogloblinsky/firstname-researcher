@@ -37,7 +37,7 @@ phantom.create(function(ph) {
                         if (err) {
                             console.log(err);
                         } else {
-                            console.log("JSON saved to " + _outputFirstNamesMaleFilename);
+                            console.log('JSON saved to ' + _outputFirstNamesMaleFilename);
                         }
                     });
 
@@ -45,7 +45,7 @@ phantom.create(function(ph) {
                         if (err) {
                             console.log(err);
                         } else {
-                            console.log("JSON saved to " + _outputFirstNamesMaleFilename);
+                            console.log('JSON saved to ' + _outputFirstNamesMaleFilename);
                         }
                     });
 

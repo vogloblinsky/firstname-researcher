@@ -28,17 +28,15 @@ rl.on('line', function(line) {
         _gender     = _infos[1],
         _languages  = _infos[2].split(', ');
 
-    if( (_.indexOf(_languages, 'french') !== -1 && _.indexOf(_languages, 'english') !== -1) ||
-        (_.indexOf(_languages, 'french') !== -1 && _.indexOf(_languages, 'spanish') !== -1) ) {
-        
-        if(_gender === 'f') {
+    if ((_.indexOf(_languages, 'french') !== -1 && _.indexOf(_languages, 'english') !== -1) ||
+        (_.indexOf(_languages, 'french') !== -1 && _.indexOf(_languages, 'spanish') !== -1)) {
+
+        if (_gender === 'f') {
             _processedFirstNamesFemale.push(_firstName);
         } else {
             _processedFirstNamesMale.push(_firstName);
         }
-        
     }
-    
 });
 
 rl.on('close', function() {
@@ -50,7 +48,7 @@ rl.on('close', function() {
         if (err) {
             console.log(err);
         } else {
-            console.log("JSON saved to " + _outputFirstNamesMaleFilename);
+            console.log('JSON saved to ' + _outputFirstNamesMaleFilename);
         }
     });
 
@@ -62,7 +60,7 @@ rl.on('close', function() {
         if (err) {
             console.log(err);
         } else {
-            console.log("JSON saved to " + _outputFirstNamesMaleFilename);
+            console.log('JSON saved to ' + _outputFirstNamesMaleFilename);
         }
     });
 });

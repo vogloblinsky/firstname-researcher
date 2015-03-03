@@ -7,9 +7,8 @@ var fs                  = require('fs'),
     _output40To60       = [],
     _output60To80       = [];
 
-
 var groupAge = function(data) {
-    if(data.averageAge > 0 && data.averageAge <= 20) {
+    if (data.averageAge > 0 && data.averageAge <= 20) {
         _output0To20.push(data);
     } else if (data.averageAge > 20 && data.averageAge <= 40) {
         _output20To40.push(data);
@@ -26,7 +25,7 @@ var printToFile = function(arr, endFileName) {
         i = 0,
         len = arr.length;
 
-    for (i; i<len; i++) {
+    for (i; i < len; i++) {
         _str += arr[i].firstName + ' : ' + arr[i].averageAge + '\r\n';
     }
 
@@ -50,7 +49,7 @@ fs.readFile(_sourceFile, 'utf8', function(err, data) {
     var i = 0,
         len = data.length;
 
-    for (i; i<len; i++) {
+    for (i; i < len; i++) {
         groupAge(data[i]);
     }
 

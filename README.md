@@ -46,8 +46,6 @@ node extract-data-first-name-from-prenoms.com.js
 
 and output txt files in data-from-dataaddict.fr folder.
 
-and output txt files in data-from-dataaddict.fr folder.
-
 Female :
 - 709 first names between 36 and 80 years old
     - 0-20 years : 200

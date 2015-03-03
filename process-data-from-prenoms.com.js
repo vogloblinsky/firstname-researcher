@@ -1,6 +1,7 @@
 var fs                  = require('fs'),
     _sourceDataAddict   = './data-from-dataaddict-fr/',
-    _outputFileName     = _sourceDataAddict + 'male-with-averageAge-',
+    _sourceFile         = _sourceDataAddict + 'male-with-averageAge.json',
+    _outputFileName     = _sourceDataAddict + 'female-with-averageAge-',
     _output0To20        = [],
     _output20To40       = [],
     _output40To60       = [],
@@ -38,7 +39,7 @@ var printToFile = function(arr, endFileName) {
     });
 };
 
-fs.readFile(_sourceDataAddict + 'male-with-averageAge.json', 'utf8', function(err, data) {
+fs.readFile(_sourceFile, 'utf8', function(err, data) {
     if (err) {
         console.log('Error: ' + err);
         return;
